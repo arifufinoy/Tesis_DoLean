@@ -1,0 +1,76 @@
+openapi: 3.1.0
+info:
+  title: DoLean Backend
+  version: 0.1.0
+  description: Contrato inicial del Sprint 0.
+servers:
+  - url: http://localhost:8000
+paths:
+  /api/v1/auth/register:
+    post:
+      tags: [authentication]
+      summary: Registrar un usuario
+      responses:
+        '201': {description: Usuario registrado}
+        '409': {description: Correo ya registrado}
+        '422': {description: Datos inválidos}
+  /api/v1/auth/login:
+    post:
+      tags: [authentication]
+      summary: Iniciar sesión
+      responses:
+        '200': {description: Tokens emitidos}
+        '401': {description: Credenciales inválidas}
+  /api/v1/auth/refresh:
+    post:
+      tags: [authentication]
+      summary: Renovar la sesión
+      responses:
+        '200': {description: Tokens rotados}
+        '401': {description: Refresh token inválido o expirado}
+  /api/v1/auth/logout:
+    post:
+      tags: [authentication]
+      summary: Cerrar sesión
+      responses:
+        '204': {description: Sesión invalidada}
+  /api/v1/auth/forgot-password:
+    post:
+      tags: [authentication]
+      summary: Solicitar recuperación de contraseña
+      responses:
+        '202': {description: Solicitud aceptada}
+  /api/v1/auth/reset-password:
+    post:
+      tags: [authentication]
+      summary: Restablecer contraseña
+      responses:
+        '200': {description: Contraseña actualizada}
+        '400': {description: Token inválido o expirado}
+  /health:
+    get:
+      tags: [system]
+      summary: Comprobar que la API está viva
+      responses:
+        '200': {description: API disponible}
+  /ready:
+    get:
+      tags: [system]
+      summary: Comprobar dependencias
+      responses:
+        '200': {description: Dependencias disponibles}
+        '503': {description: Una o más dependencias no están disponibles}
+  /api/v1/health:
+    get:
+      tags: [system]
+      summary: Comprobar que la API versionada está viva
+      responses:
+        '200': {description: API disponible}
+  /api/v1/ready:
+    get:
+      tags: [system]
+      summary: Comprobar dependencias de la API versionada
+      responses:
+        '200': {description: Dependencias disponibles}
+        '503': {description: Una o más dependencias no están disponibles}
+
