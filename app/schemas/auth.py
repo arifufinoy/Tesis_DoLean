@@ -50,3 +50,31 @@ class TokenResponse(BaseModel):
 class MessageResponse(BaseModel):
     message: str
 
+
+class ProfileResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    user_id: UUID
+    email: EmailStr
+    role: str
+    is_active: bool
+    display_name: str | None
+    bio: str | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class ProfileUpdateRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    display_name: str | None = Field(default=None, max_length=120)
+    bio: str | None = Field(default=None, max_length=5000)
+
+
+class ChangePasswordRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    current_password: str = Field(min_length=1, max_length=128)
+    new_password: str = Field(min_length=8, max_length=128)
+

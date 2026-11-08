@@ -27,6 +27,17 @@ class Settings(BaseSettings):
     smtp_port: int = 1025
     smtp_from_email: str = "no-reply@dolean.local"
     password_reset_url: str = "http://localhost:3000/reset-password"
+    audio_max_size_bytes: int = 50 * 1024 * 1024
+    audio_max_duration_seconds: int = 180
+    audio_normalized_sample_rate: int = 44100
+    dsp_frame_length: int = 2048
+    dsp_hop_length: int = 256
+    dsp_activity_top_db: float = 35.0
+    dsp_min_confidence: float = 0.55
+    dsp_min_segment_seconds: float = 0.08
+    dsp_max_gap_frames: int = 2
+    dsp_fmin_hz: float = 65.4064
+    dsp_fmax_hz: float = 2093.0
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore")
 
     @property

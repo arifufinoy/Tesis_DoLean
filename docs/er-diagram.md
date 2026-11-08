@@ -44,10 +44,13 @@ erDiagram
         string original_filename
         string content_type
         string storage_key UK
+        string normalized_storage_key
         bigint size_bytes
         float duration_seconds
         int sample_rate
         int channels
+        int normalized_sample_rate
+        int normalized_channels
     }
     ANALYSES {
         uuid id PK

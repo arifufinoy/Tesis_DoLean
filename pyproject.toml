@@ -19,8 +19,9 @@ dependencies = [
     "numpy==2.0.2",
     "PyJWT==2.10.1",
     "psycopg[binary]==3.2.3",
+    "python-multipart==0.0.20",
     "pydantic-settings==2.7.1",
-    "redis==5.2.1",
+    "redis==6.1.0",
     "scipy==1.14.1",
     "soundfile==0.12.1",
     "SQLAlchemy==2.0.36",
@@ -36,6 +37,7 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100

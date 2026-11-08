@@ -1,8 +1,8 @@
-# DoLean Backend — Sprint 0
+# DoLean Backend — Fase 1 / Sprint 1
 
 Backend inicial para el proyecto de titulación **Desarrollo de aplicación web y móvil para el análisis y corrección de afinación de audio monofónico mediante procesamiento digital de señales**.
 
-Este repositorio contiene únicamente la Fase 0 / Sprint 0: ambiente reproducible, infraestructura local, modelo relacional inicial, migración, endpoints de salud y documentación base. Las funcionalidades de usuarios, proyectos, archivos y DSP se implementarán en los sprints siguientes.
+Este repositorio contiene la base reproducible de la Fase 0, la Fase 1 completa y la gestión, análisis DSP y procesamiento asíncrono iniciales de la Fase 2.
 
 El bloque inicial de Fase 1 (1.1) añade registro, login, JWT, refresh token con rotación, logout y recuperación de contraseña mediante Mailpit.
 
@@ -62,7 +62,7 @@ pip install -e ".[dev]"
 pytest
 ```
 
-Las pruebas del Sprint 0 no requieren PostgreSQL: validan que la aplicación cargue, que los endpoints de salud respondan y que OpenAPI esté disponible. La comprobación completa de infraestructura se realiza mediante Docker Compose y está descrita en `docs/demos/sprint_0.md`.
+Las pruebas unitarias de contrato no requieren PostgreSQL; validan seguridad, rutas protegidas y disponibilidad de OpenAPI. La demo funcional completa de perfiles y proyectos se ejecuta dentro de Docker Compose y está descrita en `docs/demos/sprint_1.md`.
 
 ## Estructura
 
@@ -73,13 +73,53 @@ app/
   db/              Base declarativa, engine y sesiones
   models/          Modelo relacional inicial
   schemas/         Contratos Pydantic
-  tasks/           Configuración base de Celery
+  tasks/           Tareas Celery de procesamiento asíncrono
+  dsp/             Detección de F0, notas, cents y segmentos
 alembic/           Migraciones de PostgreSQL
-tests/             Pruebas del Sprint 0
+tests/             Pruebas unitarias, funcionales e integración
 docs/              Arquitectura, contratos y demo
 ```
 
+## Fase 1: administrador, perfil y proyectos
+
+Crear o promover una cuenta administrativa sin guardar credenciales en el código:
+
+```powershell
+docker compose run --rm -e DOLEAN_ADMIN_EMAIL=admin@dolean.dev -e DOLEAN_ADMIN_PASSWORD="Cambiar123!" api python scripts/create_admin.py
+```
+
+La contraseña se proporciona únicamente en tiempo de ejecución. El rol administrador queda preparado para futuras funciones de gestión; no se incluye todavía un panel administrativo.
+
+Ejecutar la demo completa de la Fase 1 desde la red interna de Compose:
+
+```powershell
+docker compose run --rm -e DOLEAN_DEMO_EMAIL=demo1@dolean.dev -e DOLEAN_DEMO_PASSWORD="Seguro123!" -e DOLEAN_API_URL=http://api:8000 api python scripts/demo_sprint_1.py
+```
+
+Las rutas protegidas disponibles son `GET/PATCH /api/v1/users/me`, `PUT /api/v1/users/me/password` y el CRUD de `/api/v1/projects`. La propiedad se verifica por `owner_id`; un usuario no puede consultar ni modificar proyectos ajenos.
+
+## Fase 2: análisis de afinación
+
+Reconstruir API y worker después de actualizar el código y aplicar las migraciones:
+
+```powershell
+docker compose up --build -d api worker
+docker compose run --rm api alembic upgrade head
+```
+
+Ejecutar la demo completa con un WAV sintético:
+
+```powershell
+python scripts/generate_test_audio.py
+$env:DOLEAN_DEMO_EMAIL="demo2@dolean.dev"
+$env:DOLEAN_DEMO_PASSWORD="Seguro123!"
+$env:DOLEAN_AUDIO_FILE="artifacts/audio-fixtures/a4_440hz.wav"
+python scripts/demo_sprint_2.py
+```
+
+Las rutas nuevas son `POST /api/v1/audio-files/{audio_file_id}/analyses`, `GET /api/v1/analyses/{analysis_id}`, `GET /api/v1/analyses/{analysis_id}/notes` y `GET /api/v1/jobs/{job_id}`. Swagger las documenta automáticamente en `/docs`.
+
 ## Seguridad y producción
 
-`.env` no se versiona. Los puertos de PostgreSQL, Redis y MinIO están ligados a `127.0.0.1` solo para la demo local. En producción deben eliminarse esas publicaciones y las credenciales deben inyectarse mediante un gestor de secretos. El Sprint 0 no habilita todavía autenticación ni operaciones sobre recursos.
+`.env` no se versiona. Los puertos de PostgreSQL, Redis y MinIO están ligados a `127.0.0.1` solo para la demo local. En producción deben eliminarse esas publicaciones y las credenciales deben inyectarse mediante un gestor de secretos. Las contraseñas se almacenan con Argon2, los refresh tokens se almacenan como hash y los endpoints de recursos requieren un access token válido.
 

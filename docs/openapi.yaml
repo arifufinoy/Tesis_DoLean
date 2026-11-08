@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: DoLean Backend
   version: 0.1.0
-  description: Contrato inicial del Sprint 0.
+  description: Contrato de la Fase 1 para autenticación, perfiles y proyectos.
 servers:
   - url: http://localhost:8000
 paths:
@@ -47,6 +47,127 @@ paths:
       responses:
         '200': {description: Contraseña actualizada}
         '400': {description: Token inválido o expirado}
+  /api/v1/users/me:
+    get:
+      tags: [users]
+      summary: Consultar el perfil autenticado
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Perfil del usuario autenticado}
+        '401': {description: Credenciales inválidas}
+    patch:
+      tags: [users]
+      summary: Actualizar el perfil autenticado
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Perfil actualizado}
+        '401': {description: Credenciales inválidas}
+  /api/v1/users/me/password:
+    put:
+      tags: [users]
+      summary: Cambiar contraseña
+      security: [{bearerAuth: []}]
+      responses:
+        '204': {description: Contraseña actualizada}
+        '400': {description: Contraseña actual incorrecta}
+  /api/v1/projects:
+    post:
+      tags: [projects]
+      summary: Crear proyecto
+      security: [{bearerAuth: []}]
+      responses:
+        '201': {description: Proyecto creado}
+    get:
+      tags: [projects]
+      summary: Listar proyectos propios
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Lista paginada de proyectos}
+  /api/v1/projects/{project_id}:
+    parameters:
+      - in: path
+        name: project_id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      tags: [projects]
+      summary: Consultar proyecto propio
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Proyecto encontrado}
+        '404': {description: Proyecto no encontrado}
+    patch:
+      tags: [projects]
+      summary: Actualizar proyecto propio
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Proyecto actualizado}
+        '404': {description: Proyecto no encontrado}
+    delete:
+      tags: [projects]
+      summary: Eliminar proyecto propio
+      security: [{bearerAuth: []}]
+      responses:
+        '204': {description: Proyecto eliminado}
+        '404': {description: Proyecto no encontrado}
+  /api/v1/projects/{project_id}/audio-files:
+    parameters:
+      - in: path
+        name: project_id
+        required: true
+        schema: {type: string, format: uuid}
+    post:
+      tags: [audio-files]
+      summary: Cargar un WAV o MP3
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [upload]
+              properties:
+                upload: {type: string, format: binary}
+      responses:
+        '201': {description: Archivo validado y almacenado}
+        '404': {description: Proyecto no encontrado}
+        '413': {description: Tamaño o duración excedidos}
+        '415': {description: Formato no admitido}
+    get:
+      tags: [audio-files]
+      summary: Listar audios del proyecto
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Lista paginada de audios}
+  /api/v1/audio-files/{audio_file_id}:
+    parameters:
+      - in: path
+        name: audio_file_id
+        required: true
+        schema: {type: string, format: uuid}
+    get:
+      tags: [audio-files]
+      summary: Consultar metadatos del audio
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Metadatos del audio}
+        '404': {description: Archivo no encontrado}
+    delete:
+      tags: [audio-files]
+      summary: Eliminar audio
+      security: [{bearerAuth: []}]
+      responses:
+        '204': {description: Archivo eliminado}
+        '404': {description: Archivo no encontrado}
+  /api/v1/audio-files/{audio_file_id}/download:
+    get:
+      tags: [audio-files]
+      summary: Descargar el original
+      security: [{bearerAuth: []}]
+      responses:
+        '200': {description: Archivo original}
+        '404': {description: Archivo no encontrado}
   /health:
     get:
       tags: [system]
@@ -73,4 +194,11 @@ paths:
       responses:
         '200': {description: Dependencias disponibles}
         '503': {description: Una o más dependencias no están disponibles}
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 

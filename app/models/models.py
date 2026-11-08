@@ -76,10 +76,13 @@ class AudioFile(TimestampMixin, Base):
     original_filename: Mapped[str] = mapped_column(String(255), nullable=False)
     content_type: Mapped[str] = mapped_column(String(100), nullable=False)
     storage_key: Mapped[str] = mapped_column(String(512), nullable=False)
+    normalized_storage_key: Mapped[str | None] = mapped_column(String(512))
     size_bytes: Mapped[int] = mapped_column(nullable=False)
     duration_seconds: Mapped[float | None] = mapped_column(Float)
     sample_rate: Mapped[int | None] = mapped_column(Integer)
     channels: Mapped[int | None] = mapped_column(Integer)
+    normalized_sample_rate: Mapped[int | None] = mapped_column(Integer)
+    normalized_channels: Mapped[int | None] = mapped_column(Integer)
     project: Mapped[Project] = relationship(back_populates="audio_files")
     analyses: Mapped[list["Analysis"]] = relationship(back_populates="audio_file", cascade="all, delete-orphan")
     versions: Mapped[list["ProcessedVersion"]] = relationship(back_populates="source_audio_file", cascade="all, delete-orphan")
@@ -97,6 +100,7 @@ class Analysis(TimestampMixin, Base):
     audio_file: Mapped[AudioFile] = relationship(back_populates="analyses")
     notes: Mapped[list["NoteSegment"]] = relationship(back_populates="analysis", cascade="all, delete-orphan")
     correction_requests: Mapped[list["CorrectionRequest"]] = relationship(back_populates="analysis", cascade="all, delete-orphan")
+    processing_jobs: Mapped[list["ProcessingJob"]] = relationship(back_populates="analysis", cascade="all, delete-orphan")
 
 
 class NoteSegment(Base):
@@ -119,10 +123,12 @@ class ProcessingJob(TimestampMixin, Base):
     __tablename__ = "processing_jobs"
     __table_args__ = (Index("ix_processing_jobs_status", "status"),)
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    analysis_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("analyses.id", ondelete="CASCADE"))
     job_type: Mapped[str] = mapped_column(String(50), nullable=False)
     status: Mapped[ProcessingStatus] = mapped_column(Enum(ProcessingStatus, name="processing_status", values_callable=enum_values), default=ProcessingStatus.PENDING, nullable=False)
     celery_task_id: Mapped[str | None] = mapped_column(String(255))
     error_message: Mapped[str | None] = mapped_column(Text)
+    analysis: Mapped[Analysis | None] = relationship(back_populates="processing_jobs")
 
 
 class CorrectionRequest(TimestampMixin, Base):
