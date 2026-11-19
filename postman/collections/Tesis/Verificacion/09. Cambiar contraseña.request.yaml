@@ -1,0 +1,15 @@
+$kind: http-request
+url: d
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \      \"current_password\": \"Seguro123!\",\r
+
+    \        \"new_password\": \"NuevaClave123!\"\r
+
+    \        }\r
+
+    }"
+order: 9000

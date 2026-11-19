@@ -1,0 +1,14 @@
+$kind: http-request
+url: "{{api_url}}/auth/register"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"email\": \"usuario@dolean.dev\",\r
+
+    \  \"password\": \"Seguro123!\"\r
+
+    }"
+settings: {}
+order: 1000

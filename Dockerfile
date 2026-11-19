@@ -16,8 +16,9 @@ COPY app ./app
 COPY alembic.ini ./
 COPY alembic ./alembic
 COPY scripts ./scripts
+COPY tests ./tests
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --prefer-binary .
+    pip install --prefer-binary ".[dev]"
 
 EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

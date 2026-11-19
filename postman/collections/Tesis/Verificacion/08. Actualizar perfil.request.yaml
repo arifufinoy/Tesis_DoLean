@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{api_url}}/users/me"
+method: PATCH
+body:
+  type: json
+  content: "{\r
+
+    \  \"display_name\": \"Usuario Demo\",\r
+
+    \  \"bio\": \"Perfil de prueba de DoLean\"\r
+
+    }"
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+settings: {}
+order: 8000

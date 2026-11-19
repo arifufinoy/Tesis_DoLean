@@ -31,7 +31,11 @@ ALLOWED_CONTENT_TYPES = {"audio/wav", "audio/x-wav", "audio/mpeg", "audio/mp3", 
 
 
 def safe_filename(filename: str | None) -> str:
-    name = Path(filename or "audio").name.strip()
+    # Upload clients may send Windows paths even when the API runs on Linux.
+    # Normalize separators before taking the basename to avoid persisting
+    # client-side directory components.
+    raw_name = (filename or "audio").replace("\\", "/")
+    name = Path(raw_name).name.strip()
     if not name or name in {".", ".."}:
         raise AudioValidationError("El archivo debe tener un nombre válido")
     if len(name) > 255:

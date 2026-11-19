@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{api_url}}/auth/logout"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"refresh_token\": \"{{json_web_token_0kqp}}\"\r
+
+    }"
+settings: {}
+order: 4000

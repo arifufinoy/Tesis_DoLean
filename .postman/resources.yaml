@@ -1,0 +1,8 @@
+workspace:
+  id: 4ce23050-210e-4f02-9dc7-9801a51a327f
+localResources:
+  specs:
+    - ../docs/openapi.yaml
+cloudResources:
+  collections:
+    ../postman/collections/Tesis: 54810278-8ab88b4f-66b9-49e0-a8ed-20a0fe961b8a

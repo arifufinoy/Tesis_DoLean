@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{api_url}}/auth/refresh"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"refresh_token\": \"{{json_web_token_0kjt}}\"\r
+
+    }"
+settings: {}
+order: 3000
